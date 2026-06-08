@@ -2,10 +2,7 @@ import asyncio
 import logging
 import sys
 
-from telegram.ext import Application
-
 import config
-from handlers.agent_bot import register_agent_bot_handlers
 
 logging.basicConfig(
     level=logging.INFO,
@@ -29,8 +26,57 @@ def validate():
         sys.exit(1)
 
 
+import socket
+import subprocess
+
+def is_running_in_docker() -> bool:
+    import os
+    return os.path.exists('/.dockerenv')
+
+
+def is_port_open(port: int) -> bool:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        return s.connect_ex(('127.0.0.1', port)) == 0
+
+
+def ensure_services():
+    if is_running_in_docker():
+        logger.info("Bot đang chạy trong Docker. Bỏ qua việc tự khởi chạy LLM Proxy và OpenCode Server trên host.")
+        return
+
+    # Khởi động LLM Proxy nếu chưa chạy
+    if not is_port_open(8046):
+        logger.info("Đang tự động khởi chạy LLM Proxy trên cổng 8046...")
+        try:
+            subprocess.Popen(
+                ["python3", "-m", "uvicorn", "services.llm_proxy:app", "--host", "127.0.0.1", "--port", "8046"],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                start_new_session=True
+            )
+        except Exception as e:
+            logger.error(f"Không thể khởi chạy LLM Proxy: {e}")
+
+    # Khởi động OpenCode Server nếu chưa chạy
+    if config.USE_LOCAL_OPENCODE and not is_port_open(4096):
+        logger.info("Đang tự động khởi chạy OpenCode Local Server trên cổng 4096...")
+        try:
+            subprocess.Popen(
+                ["opencode", "serve", "--port", "4096"],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                start_new_session=True
+            )
+        except Exception as e:
+            logger.error(f"Không thể khởi chạy OpenCode Server: {e}")
+
+
 async def main():
     validate()
+    ensure_services()
+
+    from telegram.ext import Application
+    from handlers.agent_bot import register_agent_bot_handlers
 
     # Khởi tạo Bot Agent
     app_agent = Application.builder().token(config.BOT_AGENT_TOKEN).build()

@@ -8,6 +8,9 @@ logger = logging.getLogger(__name__)
 class OpenCodeService:
     def __init__(self, base_url: str = "http://localhost:4096"):
         self.base_url = base_url.rstrip("/")
+        import os
+        if os.path.exists('/.dockerenv'):
+            self.base_url = self.base_url.replace("localhost", "host.docker.internal").replace("127.0.0.1", "host.docker.internal")
 
     async def create_session(self, title: str) -> Optional[str]:
         """Tạo một phiên làm việc mới trên OpenCode."""
@@ -45,7 +48,12 @@ class OpenCodeService:
         
         # Gửi dữ liệu theo format chuẩn của OpenCode
         payload = {
-            "text": prompt
+            "parts": [
+                {
+                    "type": "text",
+                    "text": prompt
+                }
+            ]
         }
         
         logger.info(f"Đang gửi tin nhắn tới OpenCode session {session_id}: {prompt[:50]}...")
