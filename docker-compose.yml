@@ -3,7 +3,7 @@ version: "3.9"
 services:
   bot:
     build: .
-    container_name: tg-summarizer-bot
+    container_name: agent-bot
     restart: unless-stopped
     env_file:
       - .env

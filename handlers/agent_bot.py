@@ -701,6 +701,7 @@ async def handle_text_message(update: Update, context: ContextTypes.DEFAULT_TYPE
 def register_agent_bot_handlers(app):
     """Đăng ký các Handler cho Bot Agent."""
     app.add_handler(CommandHandler("start", cmd_start))
+    app.add_handler(CommandHandler("help", cmd_start))
     app.add_handler(CommandHandler("repo", cmd_repo))
     app.add_handler(CommandHandler("setrepo", cmd_repo))
     app.add_handler(CommandHandler("code", cmd_code))
@@ -713,4 +714,4 @@ def register_agent_bot_handlers(app):
     
     app.add_handler(MessageHandler(filters.TEXT & filters.ChatType.PRIVATE & ~filters.COMMAND, handle_text_message))
     
-    logger.info("✅ Đã đăng ký Agent Bot handlers (/repo, /code, /abort, /reset, /interactive...)")
+    logger.info("✅ Đã đăng ký Agent Bot handlers (/help, /repo, /code, /abort, /reset, /interactive...)")
