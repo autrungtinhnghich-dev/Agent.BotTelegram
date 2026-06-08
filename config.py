@@ -68,5 +68,10 @@ GITLAB_VERIFY_SSL = os.getenv("GITLAB_VERIFY_SSL", "true").lower() == "true"
 YOUTUBE_PROXY        = os.getenv("YOUTUBE_PROXY", "")
 YOUTUBE_COOKIES_FILE = os.getenv("YOUTUBE_COOKIES_FILE", "data/youtube_cookies.txt")
 
+# ─── OpenCode.ai Integration ──────────────────────────────────
+OPENCODE_LOCAL_URL   = os.getenv("OPENCODE_LOCAL_URL", "http://localhost:4096")
+USE_LOCAL_OPENCODE   = os.getenv("USE_LOCAL_OPENCODE", "false").lower() == "true"
+
+
 
 

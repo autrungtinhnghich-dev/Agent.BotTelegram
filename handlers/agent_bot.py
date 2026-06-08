@@ -222,8 +222,93 @@ async def run_coding_agent(user_prompt: str, update: Update, context: ContextTyp
                 logger.warning(f"Error editing status message on Telegram: {e}")
 
     # Lấy hoặc tạo Agent
+    if config.USE_LOCAL_OPENCODE:
+        status_lines[2] = f"🤖 Model: <code>OpenCode Local Server</code>"
+        status_lines[3] = f"⏳ Đang kết nối tới OpenCode server..."
+        await update_telegram()
+        
+        from services.opencode_service import OpenCodeService
+        opencode_service = OpenCodeService(config.OPENCODE_LOCAL_URL)
+        
+        session_dir = "./data/agent_sessions"
+        os.makedirs(session_dir, exist_ok=True)
+        map_file = os.path.join(session_dir, "session_map.json")
+        session_map = {}
+        if os.path.exists(map_file):
+            try:
+                with open(map_file, "r") as f:
+                    session_map = json.load(f)
+            except Exception as e:
+                logger.error(f"Error reading session map: {e}")
+                
+        session_key = f"{chat_id}_{selected_repo}_opencode"
+        conversation_id = session_map.get(session_key)
+        
+        if not conversation_id:
+            status_lines[3] = "⏳ Đang tạo OpenCode session mới..."
+            await update_telegram()
+            conversation_id = await opencode_service.create_session(f"Telegram {chat_id} - {selected_repo}")
+            if not conversation_id:
+                status_lines.append("❌ Không thể tạo Session trên OpenCode Server.")
+                await edit_message_safe(bot, chat_id, status_msg.message_id, "\n".join(status_lines), parse_mode="HTML")
+                active_tasks.pop(chat_id, None)
+                return
+            
+            session_map[session_key] = conversation_id
+            try:
+                with open(map_file, "w") as f:
+                    json.dump(session_map, f)
+            except Exception as e:
+                logger.error(f"Error saving session map: {e}")
+            status_lines[3] = "✅ Đã kết nối OpenCode session mới!"
+        else:
+            status_lines[3] = "✅ Đã tái sử dụng OpenCode session hiện tại!"
+            
+        await update_telegram()
+        
+        status_lines.append("🤔 <b>OpenCode Agent:</b> Đang phân tích và xử lý...")
+        await edit_message_safe(bot, chat_id, status_msg.message_id, "\n".join(status_lines), parse_mode="HTML")
+        
+        response_text = ""
+        try:
+            async for chunk in opencode_service.send_message_stream(conversation_id, user_prompt):
+                response_text += chunk
+                status_lines[-1] = f"🤔 <b>OpenCode Agent:</b>\n{ai_to_mdv2(response_text)}"
+                await update_telegram()
+                
+            status_lines[-1] = f"🏁 <b>OpenCode Agent đã xử lý xong:</b>\n{ai_to_mdv2(response_text)}"
+            try:
+                full_text = "\n".join(status_lines)
+                if len(full_text) > 4000:
+                    header = status_lines[0]
+                    body = "\n".join(status_lines[1:])
+                    body = body[-3800:]
+                    full_text = f"{header}\n...[cắt bớt log cũ]...\n{body}"
+                await edit_message_safe(bot, chat_id, status_msg.message_id, full_text, parse_mode="HTML")
+            except Exception as e:
+                logger.error(f"Final edit failed: {e}")
+                await send_message_safe(bot, chat_id, ai_to_mdv2(response_text), parse_mode="HTML")
+        except asyncio.CancelledError:
+            logger.info(f"Task coding agent OpenCode for chat {chat_id} was cancelled.")
+            status_lines.append("🛑 <b>Tác vụ đã bị dừng bởi người dùng.</b>")
+            try:
+                await edit_message_safe(bot, chat_id, status_msg.message_id, "\n".join(status_lines), parse_mode="HTML")
+            except Exception:
+                pass
+        except Exception as err:
+            logger.error(f"System error executing OpenCode agent: {err}", exc_info=True)
+            status_lines.append(f"💥 <b>Gặp lỗi hệ thống:</b> <code>{escape(str(err))}</code>")
+            try:
+                await edit_message_safe(bot, chat_id, status_msg.message_id, "\n".join(status_lines), parse_mode="HTML")
+            except Exception:
+                pass
+        finally:
+            active_tasks.pop(chat_id, None)
+        return
+
     agent = active_agents.get(chat_id)
     if not agent or getattr(agent, "repo_path", "") != repo_path:
+
         if agent:
             try:
                 await agent.__aexit__(None, None, None)
@@ -494,13 +579,17 @@ async def cmd_reset(update: Update, context: ContextTypes.DEFAULT_TYPE):
             with open(map_file, "r") as f:
                 session_map = json.load(f)
             session_key = f"{chat_id}_{selected_repo}"
-            if session_key in session_map:
-                session_map.pop(session_key)
+            session_key_opencode = f"{chat_id}_{selected_repo}_opencode"
+            
+            if session_key in session_map or session_key_opencode in session_map:
+                session_map.pop(session_key, None)
+                session_map.pop(session_key_opencode, None)
                 with open(map_file, "w") as f:
                     json.dump(session_map, f)
                 removed = True
         except Exception as e:
             logger.error(f"Error resetting session map: {e}")
+
             
     if agent or removed:
         await send_message_safe(
