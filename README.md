@@ -1,10 +1,11 @@
 # 🤖 Premium AI Assistant Suite (Multi-Bot, DevOps & OS Agent)
 
-Dự án này là một hệ thống trợ lý **Multi-Bot Telegram** siêu cấp, tích hợp sâu giữa **Bộ não kiến thức (Personal AI Brain - RAG)**, **Trợ lý hội thoại nhóm (Chat Intelligence)**, **Quản lý dự án (Jira & SRS RAG)**, **Tự động hóa DevOps (GitLab, Code Review & Release)**, **Quản trị hệ thống (Docker & Deploy Dashboard)**, và **Điều khiển máy tính từ xa (OS World Agent)**.
+Dự án này là một hệ thống trợ lý **Multi-Bot Telegram** siêu cấp, tích hợp sâu giữa **Bộ não kiến thức (Personal AI Brain - RAG)**, **Trợ lý hội thoại nhóm (Chat Intelligence)**, **Quản lý dự án (Jira & SRS RAG)**, **Tự động hóa DevOps (GitLab, Code Review & Release)**, **Quản trị hệ thống (Docker & Deploy Dashboard)**, **Điều khiển máy tính từ xa (OS World Agent)**, và **Trợ lý lập trình tự động (Coding Agent - Google Antigravity SDK & OpenCode.ai)**.
 
-Hệ thống được thiết kế theo kiến trúc **Đa Bot (Multi-Bot Architecture)** chạy đồng thời:
-1. **Bot Chính (Main AI Bot)**: Tập trung vào cá nhân hóa, RAG kiến thức, Nhật ký, Học tập, OS Control, Docker và phân tích Chat nhóm.
-2. **Bot Phụ (Jira & DevOps Bot)**: Chuyên dụng cho Quản lý dự án, Jira worklog, AI Code Review, Automated GitLab Release và quản lý các bản Build.
+Hệ thống được thiết kế theo kiến trúc **Đa Bot (Multi-Bot Architecture)** chạy đồng thời 3 Bot độc lập:
+1. **Bot Chính (Main AI Bot)**: Tập trung vào cá nhân hóa, RAG kiến thức, Nhật ký, Học tập, OS Control, Docker, phân tích Chat nhóm, và tính toán tiện ích.
+2. **Bot Phụ (Jira & DevOps Bot)**: Chuyên dụng cho Quản lý dự án, Jira worklog, AI Code Review, Automated GitLab Release, quản lý các bản Build và CI/CD.
+3. **Bot Agent (Coding Agent)**: Robot lập trình AI kết nối qua Google Antigravity SDK hoặc Local OpenCode Server để trực tiếp đọc/sửa mã nguồn, quản lý tệp tin, kiểm tra Git và thực thi các yêu cầu lập trình trực tiếp trên workspace.
 
 ---
 
@@ -61,10 +62,11 @@ Hệ thống được thiết kế theo kiến trúc **Đa Bot (Multi-Bot Archit
 *   **Tra cứu nhanh API (`/search_code`, `/search_api`)**: Bạn chọn một repository (chương trình hỗ trợ cả folder local lẫn lấy remote qua GitLab API) và gõ từ khóa tìm kiếm (hàm, endpoint, class, param).
 *   **Tạo báo cáo Webview**: Bot tìm kiếm các tệp mã nguồn liên quan và gọi AI phân tích toàn diện, sau đó xuất ra một trang Webview Telegraph vô cùng trực quan và dễ đọc để review nhanh.
 
-### 12. 🔔 Lắng Nghe & Báo Động Tag Nhóm (Smart Group Tag Alerts & AI Listener)
-*   **Đồng bộ & Lưu trữ tag real-time**: Telethon client chạy ngầm lắng nghe các tin nhắn tag và lưu vào SQLite DB (`owner_mentions`).
-*   **Khi Bot bị tag (`@BOT`)**: Bot sẽ tự động lấy context 20 tin nhắn gần nhất xung quanh cuộc trò chuyện, nhờ AI tóm tắt chủ đề và phản hồi ngay lập tức vào group (đồng thời báo về private cho Owner).
-*   **Khi Bạn bị tag (`@OWNER`)**: Nhận cảnh báo tức thời qua tin nhắn riêng của Bot. AI sẽ phân tích lý do họ tag bạn, tóm tắt ngữ cảnh đang thảo luận và đề xuất phản hồi thích hợp giúp bạn phản ứng nhanh chóng mà không cần mở group.
+### 13. 🤖 Robot Lập Trình Tự Động (Coding Agent)
+*   **Lập trình tự động (`/code <yêu cầu>`)**: Thực hiện các yêu cầu code, debug, refactor trực tiếp trên mã nguồn dự án bằng cách sử dụng bộ công cụ thông minh qua Google Antigravity SDK hoặc Local OpenCode Server. Bạn có thể chat trực tiếp với bot để kích hoạt nhanh Agent.
+*   **Chế độ phê duyệt an toàn (`/interactive`)**: Khi được kích hoạt, mọi hành động gọi công cụ sửa đổi file hoặc chạy Terminal Command của AI Agent đều phải qua bạn phê duyệt thủ công (nút bấm Approve / Deny) giúp kiểm soát hoàn toàn hệ thống.
+*   **Hủy tác vụ khẩn cấp (`/abort` & `/reset`)**: Lệnh `/abort` để dừng ngay lập tức Agent khi đang chạy và lệnh `/reset` để làm sạch toàn bộ ngữ cảnh/lịch sử cũ để bắt đầu tác vụ mới.
+
 
 ---
 
@@ -100,6 +102,7 @@ Hệ thống được thiết kế theo kiến trúc **Đa Bot (Multi-Bot Archit
 | **Hệ Thống** | `/settime HH:mm`| Thay đổi khung giờ nhắc nhở nhật ký hàng ngày |
 | | `/checkjobs` | Xem danh sách các job lịch trình đang hoạt động |
 | | `/docker` | Bảng điều khiển quản lý container Docker |
+| | `/calc [biểu thức]`| Tính toán biểu thức toán học an toàn (ví dụ: `/calc 1+2*3`) |
 | **OS Agent** | `/screen` | Chụp và gửi ảnh màn hình máy tính realtime |
 | | `/cmd [lệnh]` | Thực thi lệnh Shell (bash/zsh) trên máy |
 | | `/control [ý]` | AI tự động điều khiển máy tính theo yêu cầu |
@@ -135,13 +138,24 @@ Hệ thống được thiết kế theo kiến trúc **Đa Bot (Multi-Bot Archit
 | **System** | `/docker` | Bảng điều khiển Docker container (chạy trên Bot Jira) |
 | | `/delegate` | Ủy thác nghiên cứu chạy ngầm (chạy trên Bot Jira) |
 
+### 3. Bot Agent (Coding Agent)
+
+| Nhóm | Lệnh | Chức năng |
+| :--- | :--- | :--- |
+| **Workspace & Repo** | `/repo` / `/setrepo` | Hiển thị danh sách các repository cục bộ để chọn workspace làm việc |
+| **Lập Trình AI** | `/code [yêu cầu]` | Kích hoạt Coding Agent thực hiện yêu cầu lập trình (hoặc reply tin nhắn + `/code`) |
+| | `/abort` | Dừng khẩn cấp tác vụ Coding Agent đang chạy |
+| | `/reset` | Xóa sạch lịch sử/context cũ của phiên làm việc hiện tại |
+| | `/interactive` | Bật/Tắt chế độ phê duyệt thủ công từng công cụ (Approve / Deny) |
+| **Chat Trực Tiếp** | *Tin nhắn thường* | Trong chat 1-1, gửi tin nhắn văn bản sẽ tự động kích hoạt Agent xử lý |
+
 ---
 
 ## 📁 Cấu Trúc Thư Mục Dự Án
 
 ```text
 .
-├── main.py                     # Điểm khởi chạy hệ thống (chạy đồng thời Telethon + 2 PTB Bots)
+├── main.py                     # Điểm khởi chạy hệ thống (chạy đồng thời Telethon + 3 PTB Bots)
 ├── config.py                   # Đọc và quản lý tất cả cấu hình môi trường (.env)
 ├── setup_session.py            # Script chạy 1 lần để đăng nhập Telethon và lấy SESSION_STRING
 ├── requirements.txt            # Danh sách thư viện Python cần thiết
@@ -158,6 +172,8 @@ Hệ thống được thiết kế theo kiến trúc **Đa Bot (Multi-Bot Archit
 │   ├── docker_handler.py       # Quản trị Docker container trực quan qua nút bấm
 │   ├── cicd_branch.py          # Quy trình CI/CD theo branch, sửa version & ref trực tiếp qua GitLab API
 │   ├── code_search.py          # Tra cứu codebase, API, tham số cục bộ/remote và viết tài liệu qua AI
+│   ├── agent_bot.py            # Logic Coding Agent kết nối Google Antigravity SDK & OpenCode local
+│   ├── calculator.py           # Tính toán biểu thức toán học an toàn
 │   └── scraper.py              # Cào dữ liệu bài viết, YouTube và tóm tắt link gửi private
 ├── services/                   # Chứa các dịch vụ nền và API kết nối (Services)
 │   ├── summarizer.py           # Core gọi LLM (Gemini API) để tóm tắt, review, lập báo cáo
@@ -166,6 +182,7 @@ Hệ thống được thiết kế theo kiến trúc **Đa Bot (Multi-Bot Archit
 │   ├── build_db.py             # SQLite lưu trữ danh sách App, phiên bản Build & Deploy
 │   ├── search_service.py       # Tìm kiếm FTS5 hỗ trợ RAG tài liệu nghiệp vụ
 │   ├── code_search.py          # Hỗ trợ tìm kiếm, định tuyến repository cục bộ và gọi AI phân tích API/codebase
+│   ├── opencode_service.py     # Giao tiếp API với Local OpenCode.ai Server
 │   ├── telegraph_api.py        # Tích hợp Telegraph API để publish các báo cáo phân tích dài thành trang webview dễ đọc
 │   ├── fetcher.py              # Sử dụng Telethon thu thập tin nhắn từ group Telegram và đồng bộ lượt tag (owner mentions)
 │   ├── jira_api.py             # Kết nối API Jira (lấy ticket, kiểm tra logwork, rủi ro)
@@ -181,7 +198,7 @@ Hệ thống được thiết kế theo kiến trúc **Đa Bot (Multi-Bot Archit
 │   ├── vocab_ai.py             # Sinh từ vựng học ngoại ngữ mỗi ngày
 │   └── tts.py                  # Chuyển đổi văn bản thành giọng nói (phát âm từ vựng)
 ├── questions/                  # Ngân hàng câu hỏi gợi ý viết nhật ký
-├── data/                       # Thư mục lưu trữ cơ sở dữ liệu SQLite (journal.db, build.db)
+├── data/                       # Thư mục lưu trữ cơ sở dữ liệu SQLite (journal.db, build.db, agent_sessions)
 └── scratch/                    # Thư mục chứa các file tạm thời trong quá trình hoạt động
 ```
 
@@ -191,9 +208,10 @@ Hệ thống được thiết kế theo kiến trúc **Đa Bot (Multi-Bot Archit
 
 ### 1. Chuẩn bị tài khoản
 1. Truy cập [my.telegram.org](https://my.telegram.org) để lấy `TELEGRAM_API_ID` và `TELEGRAM_API_HASH` của tài khoản cá nhân (dành cho Telethon đọc lịch sử chat).
-2. Chat với `@BotFather` trên Telegram để tạo 2 bot mới:
+2. Chat với `@BotFather` trên Telegram để tạo 3 bot mới:
    *   **Main Bot** -> lấy `BOT_TOKEN`.
    *   **Jira Bot** -> lấy `BOT_JIRA_TOKEN`.
+   *   **Agent Bot** -> lấy `BOT_AGENT_TOKEN`.
 3. Lấy API Key miễn phí từ [Google AI Studio](https://aistudio.google.com/app/apikey) điền vào `GEMINI_API_KEY`.
 4. Nhắn tin cho `@userinfobot` để lấy ID Telegram của bạn điền vào `ALLOWED_USER_IDS` (nhằm bảo mật hệ thống, chỉ cho phép bạn sử dụng).
 
@@ -208,6 +226,8 @@ nano .env
 *   `BOT_USERNAME`: Username của Main Bot (không bao gồm dấu `@`), dùng để lắng nghe sự kiện bot bị tag trong nhóm chat.
 *   `OWNER_USERNAME`: Username Telegram của bạn (không bao gồm dấu `@`), giúp Telethon phát hiện khi bạn bị tag trong các nhóm chat để gửi cảnh báo kèm gợi ý phản hồi về private bot.
 *   `ALLOWED_USER_IDS`: Danh sách ID Telegram của bạn (và những người được phép dùng bot), phân tách bằng dấu phẩy.
+*   `BOT_AGENT_TOKEN`: Token của Coding Agent Bot vừa tạo ở trên.
+*   `USE_LOCAL_OPENCODE` & `OPENCODE_LOCAL_URL`: Thiết lập thành `true` và trỏ URL nếu bạn muốn sử dụng Local OpenCode Server thay thế cho Gemini API trong việc chạy Agent lập trình.
 *   `JIRA_BASE_URL` & `JIRA_PAT`: Địa chỉ Jira Server của công ty và Personal Access Token của bạn để thực hiện các chức năng về task Jira, logwork, estimate và Solution Architect.
 *   `GITLAB_PAT`: Personal Access Token GitLab có quyền write/api để AI Code Review, tự động release và chạy CI/CD theo branch.
 
